@@ -159,9 +159,12 @@ public class PartLevelController : MonoBehaviour
                 mouseY = 0;
             }
             //Debug.Log(new Vector2(mouseX, mouseY));
-            transform.RotateAround(_ball.transform.position, new Vector3(mouseY, 0, -mouseX), _speedRotation * (new Vector2(mouseX, mouseY)).magnitude * Time.deltaTime * 1000);
-            //float angleY = (transform.eulerAngles.y >= 90) ? transform.eulerAngles.y % 90 : transform.eulerAngles.y;
-            //transform.eulerAngles = new Vector3(transform.eulerAngles.x, angleY, transform.eulerAngles.z);
+            var input = new Vector2(mouseY, -mouseX);
+            input = input.Rotate(-transform.eulerAngles.y);
+            // transform.RotateAround(_ball.transform.position, new Vector3(mouseY, 0, -mouseX), _speedRotation * (new Vector2(mouseX, mouseY)).magnitude * Time.deltaTime * 1000);
+            transform.RotateAround(_ball.transform.position, new Vector3(input.x, 0, input.y), _speedRotation * (new Vector2(input.x, input.y)).magnitude * Time.deltaTime * 1000);
+            // float angleY = (transform.eulerAngles.y >= 90) ? transform.eulerAngles.y % 90 : transform.eulerAngles.y;
+            // transform.eulerAngles = new Vector3(transform.eulerAngles.x, 0, transform.eulerAngles.z);
         }
 
         if (Application.platform == RuntimePlatform.Android)
@@ -211,5 +214,20 @@ public class PartLevelController : MonoBehaviour
         xy.Raycast(ray, out distance);
         var res = ray.GetPoint(distance);
         return new Vector2(res.x, res.y);
+    }
+    
+    
+}
+
+public static class Vector2Extension {
+    public static Vector2 Rotate(this Vector2 v, float degrees) {
+        float radians = degrees * Mathf.Deg2Rad;
+        float sin = Mathf.Sin(radians);
+        float cos = Mathf.Cos(radians);
+         
+        float tx = v.x;
+        float ty = v.y;
+ 
+        return new Vector2(cos * tx - sin * ty, sin * tx + cos * ty);
     }
 }
